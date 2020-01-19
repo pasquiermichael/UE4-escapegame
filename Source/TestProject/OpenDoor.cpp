@@ -6,7 +6,6 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 
-AActor* Owner;
 FRotator NewRotation;
 float val;
 
@@ -25,6 +24,7 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+	Owner = GetOwner();
 	//val = 90.0;
 	// ...
 	//ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
@@ -33,11 +33,13 @@ void UOpenDoor::BeginPlay()
 
 void UOpenDoor::OpenDoor()
 {
-	Owner = GetOwner();
-	NewRotation = FRotator(0.0, 0.0, 0.0);
-	Owner->SetActorRotation(NewRotation);
+	Owner->SetActorRotation(FRotator(0.0, 0.0, 0.0));
 }
 
+void UOpenDoor::CloseDoor()
+{
+	Owner->SetActorRotation(FRotator(0.0, 90.0f, 0.0));
+}
 
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -58,6 +60,14 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if (PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor();
+		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
+
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (CurrentTime - LastDoorOpenTime >= DoorCloseDelay)
+	{
+		CloseDoor();
+	}
+
 }
 
