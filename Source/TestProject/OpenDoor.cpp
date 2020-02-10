@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
+#include "Components/PrimitiveComponent.h"
 
 FRotator NewRotation;
 float val;
@@ -58,7 +59,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	//if (PressurePlate->IsOverlappingActor(ActorThatOpens))
 	//{
-	if (GetTotalMassOfActorOnPlate() > 105.0f) {
+	if (GetTotalMassOfActorOnPlate() > 50.0f) {
 		OpenDoor();
 		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
@@ -76,8 +77,17 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 float UOpenDoor::GetTotalMassOfActorOnPlate() 
 {
 	float TotalMass = 0.0f;
+	if (!PressurePlate) {
+		return 0.0f;
+	}
 	TSet<AActor*> OverlappingActors;
 	PressurePlate->GetOverlappingActors(OverlappingActors);
+
+	for (const auto& Actor : OverlappingActors) {
+		TotalMass += Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		UE_LOG(LogTemp, Warning, TEXT("TOTAL ACTOR WEIGHT: %f"), TotalMass);
+		UE_LOG(LogTemp, Warning, TEXT("Actor on plate: %s"), *Actor->GetName());
+	}
 
 	return TotalMass;
 }

@@ -67,6 +67,9 @@ const FHitResult UGrabber::GestFirstPhysicsBodyInReach()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (!PhysicsHandle) {
+		return;
+	}
 	if (PhysicsHandle->GrabbedComponent) 
 	{
 		FVector LineTraceEnd = GetReachLineEnd();
@@ -80,7 +83,7 @@ void UGrabber::Grab()
 	auto HitResult = GestFirstPhysicsBodyInReach();
 	auto ComponentToGrab = HitResult.GetComponent();
 	auto ActorHit = HitResult.GetActor();
-	if (ActorHit != nullptr) {
+	if (ActorHit != nullptr && PhysicsHandle) {
 		PhysicsHandle->GrabComponent(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation(), true);
 		//PhysicsHandle->GrabComponentAtLocation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation());
 	}
@@ -89,6 +92,9 @@ void UGrabber::Grab()
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab released"));
+	if (!PhysicsHandle) {
+		return;
+	}
 	PhysicsHandle->ReleaseComponent();
 }
 
