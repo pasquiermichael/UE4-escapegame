@@ -7,10 +7,13 @@
 #include "Engine\TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TESTPROJECT_API UOpenDoor : public UActorComponent
 {
 	GENERATED_BODY()
+
 
 public:	
 	// Sets default values for this component's properties
@@ -29,9 +32,13 @@ public:
 
 	float GetTotalMassOfActorOnPlate();
 
+	UPROPERTY(BlueprintAssignable)
+	FOnOpenRequest OnOpenRequest;
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	float OpenAngle = 90.0f;
+	UPROPERTY(EditAnywhere)
+	float CloseAngle = 0.0f;
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlate = nullptr;
 	UPROPERTY(EditAnywhere)
