@@ -39,7 +39,8 @@ void UOpenDoor::OpenDoor()
 
 void UOpenDoor::CloseDoor()
 {
-	Owner->SetActorRotation(FRotator(0.0, CloseAngle, 0.0));
+	//Owner->SetActorRotation(FRotator(0.0, CloseAngle, 0.0));
+	OnCloseRequest.Broadcast();
 }
 
 // Called every frame
@@ -64,14 +65,22 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		OpenDoor();
 		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
+	else {
+		float CurrentTime = GetWorld()->GetTimeSeconds();
+		if (CurrentTime - LastDoorOpenTime >= DoorCloseDelay)
+		{
+			CloseDoor();
+		}
+		//CloseDoor();
+	}
 		
 	//}
 
-	float CurrentTime = GetWorld()->GetTimeSeconds();
+	/*float CurrentTime = GetWorld()->GetTimeSeconds();
 	if (CurrentTime - LastDoorOpenTime >= DoorCloseDelay)
 	{
 		CloseDoor();
-	}
+	}*/
 
 }
 
